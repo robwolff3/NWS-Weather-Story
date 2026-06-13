@@ -1,0 +1,18 @@
+# Secrets — never bake into an image layer
+.env
+
+# Persistent runtime data
+data/
+
+# VCS / project meta
+.git/
+.gitignore
+.dockerignore
+LICENSE
+README.md
+
+# Python cruft
+__pycache__/
+*.py[cod]
+.venv/
+venv/

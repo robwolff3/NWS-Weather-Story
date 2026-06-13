@@ -1,0 +1,31 @@
+services:
+  nws-weather-story:
+    build: .
+    container_name: nws-weather-story
+    restart: unless-stopped
+    env_file: .env
+    volumes:
+      - nws-weather-story:/data
+    environment:
+      # ── Which NWS office to watch ─────────────────────────────
+      WFO: "${WFO:-dtx}"                            # e.g. dtx (Detroit), okx (NYC), lot (Chicago)
+
+      # ── Notifications (configure at least one channel) ────────
+      # Email (Gmail SMTP):
+      GMAIL_USER: "${GMAIL_USER:-}"                 # your-email@gmail.com
+      GMAIL_APP_PASSWORD: "${GMAIL_APP_PASSWORD:-}" # 16-char app password
+      NOTIFY_EMAILS: "${NOTIFY_EMAILS:-}"           # comma-separated; defaults to GMAIL_USER
+      # Apprise (Discord/Telegram/ntfy/Slack/etc):
+      APPRISE_URLS: "${APPRISE_URLS:-}"             # comma-separated Apprise URLs
+
+      # ── Optional ──────────────────────────────────────────────
+      # CHECK_INTERVAL: "3600"                      # seconds between checks (default: 1 hour)
+      # SKIP_KEYWORDS: "Marine"                     # OCR-skip changes whose scan region contains these
+      # OCR_REGION: "0,0,100%,15%"                  # where to scan: left,top,right,bottom (px or %)
+      # UPTIME_KUMA_PUSH_URL: ""                    # push-monitor heartbeat URL
+      # LOCATION_NAME: "Detroit"                    # friendly name used in notifications
+      # TIMEZONE: "America/Detroit"
+      # IMAGE_NAMES: "Tab1FileL.png,Tab2FileL.png,Tab3FileL.png,Tab4FileL.png,Tab5FileL.png"
+
+volumes:
+  nws-weather-story:
