@@ -63,8 +63,10 @@ NOTIFY_EMAILS = _split(os.getenv("NOTIFY_EMAILS", "") or GMAIL_USER)
 # Apprise (optional — comma-separated Apprise URLs for Discord/Telegram/ntfy/etc).
 APPRISE_URLS = _split(os.getenv("APPRISE_URLS", ""))
 
-# Uptime Kuma push heartbeat (optional).
+# Uptime Kuma push heartbeat (optional). HEARTBEAT_INTERVAL controls how often
+# the liveness ping is sent, independent of CHECK_INTERVAL.
 UPTIME_KUMA_PUSH_URL = os.getenv("UPTIME_KUMA_PUSH_URL", "").strip()
+HEARTBEAT_INTERVAL = int(os.getenv("HEARTBEAT_INTERVAL", "60"))  # seconds
 
 # OCR-based skip: ignore a change if a region of the image contains any of these
 # keywords (comma-separated, case-insensitive). Empty = OCR disabled.
@@ -276,9 +278,12 @@ def ping_heartbeat(ok: bool = True, msg: str = "OK"):
     """Ping an Uptime Kuma push monitor, if configured."""
     if not UPTIME_KUMA_PUSH_URL:
         return
+    # Use only the base URL; Kuma's "copy" button includes a sample query string
+    # (?status=up&msg=OK&ping=) which would otherwise collide with our params.
+    base = UPTIME_KUMA_PUSH_URL.split("?", 1)[0]
     try:
         requests.get(
-            UPTIME_KUMA_PUSH_URL,
+            base,
             params={"status": "up" if ok else "down", "msg": msg},
             timeout=10,
         )
@@ -354,7 +359,20 @@ def main():
             log.error(f"Unhandled error: {e}", exc_info=True)
             ping_heartbeat(ok=False, msg=str(e))
 
+        _sleep_until_next_check()
+
+
+def _sleep_until_next_check():
+    """Sleep CHECK_INTERVAL, emitting liveness heartbeats along the way."""
+    if not UPTIME_KUMA_PUSH_URL:
         time.sleep(CHECK_INTERVAL)
+        return
+    remaining = CHECK_INTERVAL
+    while remaining > 0:
+        nap = min(HEARTBEAT_INTERVAL, remaining)
+        time.sleep(nap)
+        remaining -= nap
+        ping_heartbeat(ok=True)
 
 
 if __name__ == "__main__":

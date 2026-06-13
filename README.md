@@ -63,6 +63,7 @@ All settings are environment variables (set in `.env`). Configure **at least one
 | `OCR_REGION` | top band | Region to OCR as `left,top,right,bottom` (pixels, or `%` of image). E.g. `0,0,100%,15%` |
 | `OCR_CROP_HEIGHT` | `80` | Height (px) of the default top-band region when `OCR_REGION` is unset |
 | `UPTIME_KUMA_PUSH_URL` | — | Uptime Kuma push-monitor URL for heartbeats |
+| `HEARTBEAT_INTERVAL` | `60` | Seconds between liveness heartbeats (independent of `CHECK_INTERVAL`) |
 | `LOCATION_NAME` | `WFO` (uppercased) | Friendly name shown in notifications |
 | `TIMEZONE` | `America/Detroit` | Timezone for notification timestamps |
 | `IMAGE_NAMES` | `Tab1FileL.png,…,Tab5FileL.png` | Comma-separated image filenames |
