@@ -10,6 +10,7 @@ data/
 .dockerignore
 LICENSE
 README.md
+*.png
 
 # Python cruft
 __pycache__/

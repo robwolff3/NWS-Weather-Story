@@ -4,6 +4,8 @@ Watches a [National Weather Service Weather Story](https://www.weather.gov/dtx/w
 
 Works with **any NWS office**, not just Detroit: set `WFO` to your local office code.
 
+![Example email notification showing an updated NWS Weather Story](image.png)
+
 ## How it works
 
 Every hour (configurable), the monitor downloads each Weather Story tab image, SHA-256 hashes it, and compares against the previously stored hash. When an image changes it sends a notification with the new image(s) attached. Hashes are persisted in a Docker volume so they survive restarts.
